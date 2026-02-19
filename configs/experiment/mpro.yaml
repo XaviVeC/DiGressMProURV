@@ -1,0 +1,204 @@
+# SARS-CoV-2 Main Protease (Mpro) Inhibitor Generation Experiment
+# ================================================================
+# Pathway A: Molecular Generation with Binding Labels
+#
+# Configuration for training a diffusion model on Mpro inhibitors.
+# 
+# Execution:
+#   python src/main.py experiment=mpro
+#   python src/main.py experiment=mpro general.gpus=2 train.batch_size=16
+#   python src/main.py experiment=mpro train.n_epochs=100 model.type=continuous
+
+defaults:
+  - _self_
+  - dataset: mpro
+  - model: discrete
+  - train: train_default
+
+# ==================================================================
+# General Settings
+# ==================================================================
+general:
+  # Experiment name (used for logging and output directory)
+  name: mpro_generation_v1
+  
+  # Weights & Biases logging
+  # Options: 'online', 'offline', 'disabled'
+  # Note: Set to 'offline' if no internet connection
+  wandb: offline
+  
+  # GPU configuration
+  gpus: 1          # Number of GPUs
+  batch_size: 32   # Overall batch size (divided among GPUs)
+  accelerator: auto
+  
+  # Checkpointing
+  resume: null     # Path to checkpoint to resume training
+  test_only: null  # Path to checkpoint for testing only
+
+# ==================================================================
+# Model Configuration
+# ==================================================================
+model:
+  # Model type: 'discrete' or 'continuous'
+  # Discrete recommended for Mpro (categorical atom/bond types)
+  type: discrete
+  
+  # Diffusion transition type
+  transition: marginal
+  
+  # Transformer backbone architecture
+  model: graph_tf
+  
+  # Extra features (optional)
+  # Can encode temporal information, pIC50 values, etc.
+  extra_features: null
+  
+  # Number of diffusion timesteps
+  nsteps: 1000
+  
+  # Velocity scaling for continuous models
+  scale_by_sigma: false
+  
+  # Noise schedule
+  noise_schedule: polynomial_2
+  noise_precision: 1e-5
+
+# ==================================================================
+# Training Settings (for small dataset)
+# ==================================================================
+train:
+  # Number of training epochs
+  # For small dataset (379 molecules), extended training helps
+  n_epochs: 300
+  
+  # Batch size
+  # Reduced for small dataset to improve statistics
+  batch_size: 16
+  
+  # Learning rate
+  # Standard from QM9 - may need adjustment for domain
+  lr: 0.0002
+  
+  # Gradient clipping
+  clip_grad: 1.0
+  
+  # Learning rate scheduler
+  lr_scheduler: exponential
+  
+  # Exponential Moving Average (EMA) for model weights
+  ema_decay: 0.99
+  
+  # Weight decay (L2 regularization)
+  weight_decay: 1e-12
+  
+  # Number of train steps between validation
+  n_train_steps_per_validation: 1000
+  
+  # Checkpoint saving
+  # Keep best 5 checkpoints based on validation NLL
+  save_model: true
+  ckpt_every: 10  # Save checkpoint every N epochs
+  
+  # Early stopping (optional)
+  # patience: 50  # Stop if validation loss doesn't improve for N epochs
+
+# ==================================================================
+# Sampling/Generation Settings
+# ==================================================================
+sampling:
+  # Number of molecules to generate during validation
+  num_samples: 256
+  
+  # Number of samples for final generation
+  num_test_samples: 1000
+  
+  # Sampling method
+  method: ddpm  # Options: ddpm, ddim
+  
+  # For DDIM (faster):
+  # - num_steps: 50  # Discrete timestep count
+
+# ==================================================================
+# Validation Settings
+# ==================================================================
+validate:
+  # Check validation every N epochs
+  every_n_epochs: 5
+  
+  # Metrics to compute
+  # Options: validity, uniqueness, novelty, binding_affinity
+  metrics:
+    - validity
+    - uniqueness
+    - novelty
+  
+  # Number of generated samples for metrics
+  num_samples: 256
+
+# ==================================================================
+# MPro-Specific Configuration
+# ==================================================================
+# These settings leverage Mpro-URV database properties for training
+
+mpro:
+  # Include pIC50 binding affinity as auxiliary task
+  use_binding_affinity: false
+  
+  # Binding affinity prediction
+  # When true: model predicts pIC50 alongside generation
+  # Helps learn binding-relevant molecular features
+  predict_binding: false
+  
+  # Conditional generation based on pIC50
+  # When true: condition generation on target binding affinity
+  conditional_generation: false
+  
+  # Target pIC50 for conditional generation (if enabled)
+  target_pic50: 6.0  # Generate potent inhibitors
+  
+  # Data augmentation
+  # SMILES augmentation improves generalization on small datasets
+  smiles_augmentation: true
+  num_augmentations: 10  # Augment each SMILES 10 ways
+
+# ==================================================================
+# Debugging/Logging
+# ==================================================================
+debug:
+  # Print verbose output
+  verbose: true
+  
+  # Save generated SMILES during training
+  save_samples: true
+  
+  # Validate on training set (check for overfitting)
+  validate_on_train: false
+  
+  # Smaller dataset for debugging
+  # Set to small number for quick testing
+  limit_train_batches: null  # Set to 10 for testing
+  limit_val_batches: null
+
+# ==================================================================
+# Hyperparameter Statistics
+# ==================================================================
+# Training on 379 molecules (small dataset):
+#
+# Recommended settings for avoiding overfitting:
+# - batch_size: 16-32 (larger batches help regularization)
+# - lr: 0.0002 (conservative learning rate)
+# - weight_decay: 1e-12 (light L2 regularization)
+# - ema_decay: 0.99 (conservative EMA)
+# - n_epochs: 200-300 (longer training, monitor validation)
+#
+# Expected performance:
+# - Training time: ~2-4 hours on single GPU
+# - Validation every 5 epochs: ~40 min per epoch
+# - Final model size: ~100 MB
+#
+# Monitoring:
+# - Watch for overfitting (train loss ↓ but val loss ↑)
+# - Monitor SMILES validity on validation set
+# - Check novelty (% unique vs training set)
+# - Verify chemical properties match drug-like molecules

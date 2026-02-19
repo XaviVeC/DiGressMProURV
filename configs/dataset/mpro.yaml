@@ -1,0 +1,61 @@
+# SARS-CoV-2 Main Protease (Mpro) Inhibitor Dataset Configuration
+# ==================================================================
+# Pathway A: Molecular Generation with Binding Labels
+#
+# This configuration loads the MPro-URV_Version2 database for training
+# a generative model on SARS-CoV-2 Mpro inhibitors.
+#
+# Dataset Statistics:
+# - Total compounds: 379 (after filtering)
+# - Training set: ~304 compounds
+# - Validation set: ~95 compounds  
+# - Test set: ~80 compounds
+# - Binding affinity range (pIC50): 4.0 - 7.4
+# - Most molecules: 10-50 heavy atoms
+#
+# Best Practices for Small Datasets:
+# - Remove hydrogens (remove_h: True) to reduce dimensionality
+# - Use data augmentation (canonicalization)
+# - Consider transfer learning from QM9 pre-trained models
+# - Monitor overfitting carefully
+
+name: 'mpro'  # Dataset identifier
+
+# Path to MPro-URV_Version2 database root directory
+# If not set, uses default path: ../../../test_code/MPro-URV_Version2
+datadir: 'data/mpro/'
+
+# Raw data directory (full path to MPro-URV_Version2)
+# Uncomment and set if using non-default location:
+# raw_data_dir: '/path/to/MPro-URV_Version2'
+
+# Remove hydrogens for processing
+# Recommended: True (reduces from 9 to 8 atom types)
+remove_h: True
+
+# Random subset? 
+# Set to null to use full dataset, or integer for random subset
+random_subset: null
+
+# Pin memory for faster data loading (GPU training)
+pin_memory: True
+
+# ==================================================================
+# Optional: Binding Affinity Properties
+# ==================================================================
+# The pIC50 values are automatically loaded as node targets (y in Data)
+# 
+# For conditional generation:
+#   - pIC50 can be used as auxiliary information
+#   - Embed as temporal conditioning in diffusion process
+#   - Enables generation of high-affinity candidates
+#
+# For multi-task learning:
+#   - Predict pIC50 alongside graph generation
+#   - Helps learn binding-relevant features
+#
+# Statistics:
+#   - Mean pIC50: 5.1 (weak-to-moderate binders)
+#   - Median pIC50: 4.95
+#   - Very potent (>6.0): ~9% of dataset
+#   - Weak (<5.0): ~57% of dataset

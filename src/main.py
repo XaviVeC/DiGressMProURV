@@ -99,7 +99,7 @@ def main(cfg: DictConfig):
                         'sampling_metrics': sampling_metrics, 'visualization_tools': visualization_tools,
                         'extra_features': extra_features, 'domain_features': domain_features}
 
-    elif dataset_config["name"] in ['qm9', 'guacamol', 'moses']:
+    elif dataset_config["name"] in ['qm9', 'guacamol', 'moses', 'mpro']:
         from metrics.molecular_metrics import TrainMolecularMetrics, SamplingMolecularMetrics
         from metrics.molecular_metrics_discrete import TrainMolecularMetricsDiscrete
         from diffusion.extra_features_molecular import ExtraMolecularFeatures
@@ -122,6 +122,14 @@ def main(cfg: DictConfig):
             datamodule = moses_dataset.MosesDataModule(cfg)
             dataset_infos = moses_dataset.MOSESinfos(datamodule, cfg)
             train_smiles = None
+        
+        elif dataset_config['name'] == 'mpro':
+            from datasets import mpro_dataset
+            datamodule = mpro_dataset.MproDataModule(cfg)
+            dataset_infos = mpro_dataset.MproInfos(datamodule=datamodule, cfg=cfg)
+            train_smiles = mpro_dataset.get_train_smiles(cfg=cfg, train_dataloader=datamodule.train_dataloader(),
+                                                         dataset_infos=dataset_infos, evaluate_dataset=False)
+        
         else:
             raise ValueError("Dataset not implemented")
 
