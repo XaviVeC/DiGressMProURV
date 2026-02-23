@@ -13,6 +13,8 @@ pip install -r requirements.txt
 pip install -e .
 cd src/analysis/orca/
 g++ -O2 -std=c++11 -o orca orca.cpp
+cd ../..
+python3 main.py dataset=mpro +dataset.raw_data_dir="**FULLPATHTO**/MPro-URV_Version2" general.name=test
 
 
 =================
