@@ -86,13 +86,14 @@ class MproDataset(InMemoryDataset):
         self.stage = stage
         self.remove_h = remove_h
         
-        # Resolve dataset_dir path
+        # Resolve dataset_dir path in a portable way
         if dataset_dir is None:
-            # Default: relative to this file's parent (src/datasets) -> up 2 levels to repo root, then to MPro-URV_Version2
-            base_path = pathlib.Path(os.path.realpath(__file__)).parents[2]
-            self.dataset_dir = os.path.join(base_path.parent, 'MPro-URV_Version2')
+            # Default: repo root is two levels above this file; expect MPro-URV_Version2 next to repo
+            base_path = pathlib.Path(__file__).resolve().parents[2]
+            self.dataset_dir = str((base_path / 'MPro-URV_Version2').resolve())
         else:
-            self.dataset_dir = dataset_dir
+            # Allow user to pass a relative or absolute path; normalize it
+            self.dataset_dir = str(pathlib.Path(dataset_dir).expanduser().resolve())
         
         # Map stage to file index
         self.file_idx = {'train': 0, 'val': 1, 'test': 2}[stage]
@@ -108,7 +109,7 @@ class MproDataset(InMemoryDataset):
         return [
             'Info.csv',
             'pIC50.txt',
-            'Ligand_SMI',  # Directory
+            'Ligand/Ligand_SMI',  # Directory (nested under Ligand)
             'Splits'       # Directory
         ]
     

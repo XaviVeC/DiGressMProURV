@@ -28,6 +28,8 @@ datadir: 'data/mpro/'
 # Raw data directory (full path to MPro-URV_Version2)
 # Uncomment and set if using non-default location:
 # raw_data_dir: '/path/to/MPro-URV_Version2'
+# Added so Hydra accepts runtime overrides (use +dataset.raw_data_dir=...)
+raw_data_dir: null
 
 # Remove hydrogens for processing
 # Recommended: True (reduces from 9 to 8 atom types)

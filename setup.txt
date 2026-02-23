@@ -1,0 +1,24 @@
+======
+LINUX 
+======
+
+conda create -c conda-forge -n digress rdkit=2023.03.2 python=3.9
+conda activate digress
+python3 -c 'from rdkit import Chem'
+conda install -c conda-forge graph-tool=2.45
+python3 -c 'import graph_tool as gt
+conda install -c "nvidia/label/cuda-11.8.0" cuda
+pip3 install torch==2.0.1 --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt
+pip install -e .
+cd src/analysis/orca/
+g++ -O2 -std=c++11 -o orca orca.cpp
+
+
+=================
+WINDOWS PERSONAL
+=================
+wsl
+~/miniconda3/bin/conda init bash
+source ~/.bashrc
+conda activate digress
