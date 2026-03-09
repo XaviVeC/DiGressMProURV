@@ -151,9 +151,10 @@ class SamplingMolecularMetrics(nn.Module):
             print("Custom metrics computed.")
         if local_rank == 0:
             valid_unique_molecules = rdkit_metrics[1]
-            textfile = open(f'graphs/{name}/valid_unique_molecules_e{current_epoch}_b{val_counter}.txt', "w")
-            textfile.writelines(valid_unique_molecules)
-            textfile.close()
+            output_path = f'graphs/{name}/valid_unique_molecules_e{current_epoch}_b{val_counter}.txt'
+            with open(output_path, "w") as textfile:
+                if valid_unique_molecules:
+                    textfile.write("\n".join(valid_unique_molecules) + "\n")
             print("Stability metrics:", stability, "--", rdkit_metrics[0])
 
     def reset(self):

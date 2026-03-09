@@ -1,14 +1,15 @@
 import graph_tool as gt
 import os
 import pathlib
+import math
 import warnings
 
 import torch
 torch.cuda.empty_cache()
 import hydra
 from omegaconf import DictConfig
-from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning import Trainer, seed_everything
+from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.utilities.warnings import PossibleUserWarning
 
 from src import utils
@@ -20,6 +21,25 @@ from diffusion.extra_features import DummyExtraFeatures, ExtraFeatures
 
 
 warnings.filterwarnings("ignore", category=PossibleUserWarning)
+
+
+def build_early_stopping_callback(cfg):
+    patience_epochs = cfg.train.get('early_stopping_patience')
+    if patience_epochs is None:
+        return None
+
+    patience_epochs = int(patience_epochs)
+    if patience_epochs <= 0:
+        return None
+
+    val_frequency = max(1, int(cfg.general.check_val_every_n_epochs))
+    patience_checks = max(1, math.ceil(patience_epochs / val_frequency))
+    return EarlyStopping(
+        monitor='val/epoch_NLL',
+        patience=patience_checks,
+        mode='min',
+        verbose=True,
+    )
 
 
 def get_resume(cfg, model_kwargs):
@@ -67,6 +87,7 @@ def get_resume_adaptive(cfg, model_kwargs):
 
 @hydra.main(version_base='1.3', config_path='../configs', config_name='config')
 def main(cfg: DictConfig):
+    seed_everything(cfg.train.seed, workers=True)
     dataset_config = cfg["dataset"]
 
     if dataset_config["name"] in ['sbm', 'comm20', 'planar']:
@@ -185,6 +206,10 @@ def main(cfg: DictConfig):
         last_ckpt_save = ModelCheckpoint(dirpath=f"checkpoints/{cfg.general.name}", filename='last', every_n_epochs=1)
         callbacks.append(last_ckpt_save)
         callbacks.append(checkpoint_callback)
+
+    early_stopping_callback = build_early_stopping_callback(cfg)
+    if early_stopping_callback is not None:
+        callbacks.append(early_stopping_callback)
 
     if cfg.train.ema_decay > 0:
         ema_callback = utils.EMA(decay=cfg.train.ema_decay)

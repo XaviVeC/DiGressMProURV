@@ -1,0 +1,36 @@
+defaults:
+  - _self_
+  - dataset: mpro
+  - model: discrete
+  - train: train_default
+
+general:
+  name: mpro_upgraded
+  wandb: offline
+  gpus: 1
+
+train:
+  batch_size: 32
+  n_epochs: 500
+  ema_decay: 0.999
+  clip_grad: 1.0
+  early_stopping_patience: 50
+  lr_scheduler: cosine
+  lr_scheduler_min_lr: 1e-6
+
+model:
+  lambda_train: [5, 1]
+  n_layers: 3
+  dropout: 0.2
+  hidden_mlp_dims:
+    X: 128
+    E: 64
+    y: 64
+  hidden_dims:
+    dx: 128
+    de: 32
+    dy: 32
+    n_head: 4
+    dim_ffX: 128
+    dim_ffE: 64
+    dim_ffy: 64

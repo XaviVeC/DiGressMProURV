@@ -74,7 +74,8 @@ class LiftedDenoisingDiffusion(pl.LightningModule):
                                       hidden_dims=cfg.model.hidden_dims,
                                       output_dims=output_dims,
                                       act_fn_in=nn.ReLU(),
-                                      act_fn_out=nn.ReLU())
+                                      act_fn_out=nn.ReLU(),
+                                      dropout=cfg.model.get('dropout', 0.1))
 
         self.save_hyperparameters()
 
@@ -115,8 +116,12 @@ class LiftedDenoisingDiffusion(pl.LightningModule):
         return {'loss': mse}
 
     def configure_optimizers(self):
-        return torch.optim.AdamW(self.parameters(), lr=self.cfg.train.lr, amsgrad=True,
-                                 weight_decay=self.cfg.train.weight_decay)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.cfg.train.lr, amsgrad=True,
+                                      weight_decay=self.cfg.train.weight_decay)
+        scheduler = utils.build_lr_scheduler(self.cfg, optimizer)
+        if scheduler is None:
+            return optimizer
+        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
 
     def on_fit_start(self) -> None:
         self.train_iterations = len(self.trainer.datamodule.train_dataloader())

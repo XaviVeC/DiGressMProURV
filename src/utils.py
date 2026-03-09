@@ -137,3 +137,26 @@ def setup_wandb(cfg):
               'settings': wandb.Settings(_disable_stats=True), 'reinit': True, 'mode': cfg.general.wandb}
     wandb.init(**kwargs)
     wandb.save('*.txt')
+
+
+def build_lr_scheduler(cfg, optimizer):
+    scheduler_name = cfg.train.get('lr_scheduler')
+    if scheduler_name in [None, '', 'none', 'off', False]:
+        return None
+
+    scheduler_name = str(scheduler_name).lower()
+    if scheduler_name in ['cosine', 'cosine_annealing']:
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=cfg.train.n_epochs,
+            eta_min=cfg.train.get('lr_scheduler_min_lr', 1e-6),
+        )
+    elif scheduler_name == 'exponential':
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(
+            optimizer,
+            gamma=cfg.train.get('lr_scheduler_gamma', 0.99),
+        )
+    else:
+        raise ValueError(f"Unsupported lr scheduler: {scheduler_name}")
+
+    return {'scheduler': scheduler, 'interval': 'epoch', 'frequency': 1}
