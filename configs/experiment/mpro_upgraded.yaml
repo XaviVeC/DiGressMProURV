@@ -1,13 +1,12 @@
-defaults:
-  - _self_
-  - dataset: mpro
-  - model: discrete
-  - train: train_default
+# @package _global_
 
 general:
   name: mpro_upgraded
   wandb: offline
   gpus: 1
+
+dataset:
+  name: mpro
 
 train:
   batch_size: 32
