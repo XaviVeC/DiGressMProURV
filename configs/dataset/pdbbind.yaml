@@ -1,0 +1,15 @@
+# PDBbindv2020 dataset configuration used for DiGress pretraining.
+
+name: 'pdbbind'
+
+# Processed cache location inside the DiGress workspace.
+datadir: 'data/pdbbind/'
+
+# Optional absolute path override for the local PDBbindv2020 folder.
+# If null, the dataset module resolves ../PDBbindv2020 next to DiGressMProURV.
+raw_data_dir: null
+
+# Keep the atom space aligned with MPro fine-tuning.
+remove_h: True
+random_subset: null
+pin_memory: True

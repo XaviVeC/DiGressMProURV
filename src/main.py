@@ -120,7 +120,7 @@ def main(cfg: DictConfig):
                         'sampling_metrics': sampling_metrics, 'visualization_tools': visualization_tools,
                         'extra_features': extra_features, 'domain_features': domain_features}
 
-    elif dataset_config["name"] in ['qm9', 'guacamol', 'moses', 'mpro']:
+    elif dataset_config["name"] in ['qm9', 'guacamol', 'moses', 'mpro', 'pdbbind']:
         from metrics.molecular_metrics import TrainMolecularMetrics, SamplingMolecularMetrics
         from metrics.molecular_metrics_discrete import TrainMolecularMetricsDiscrete
         from diffusion.extra_features_molecular import ExtraMolecularFeatures
@@ -150,6 +150,17 @@ def main(cfg: DictConfig):
             dataset_infos = mpro_dataset.MproInfos(datamodule=datamodule, cfg=cfg)
             train_smiles = mpro_dataset.get_train_smiles(cfg=cfg, train_dataloader=datamodule.train_dataloader(),
                                                          dataset_infos=dataset_infos, evaluate_dataset=False)
+
+        elif dataset_config['name'] == 'pdbbind':
+            from datasets import pdbbind_dataset
+            datamodule = pdbbind_dataset.PDBbindDataModule(cfg)
+            dataset_infos = pdbbind_dataset.PDBbindInfos(datamodule=datamodule, cfg=cfg)
+            train_smiles = pdbbind_dataset.get_train_smiles(
+                cfg=cfg,
+                train_dataloader=datamodule.train_dataloader(),
+                dataset_infos=dataset_infos,
+                evaluate_dataset=False,
+            )
         
         else:
             raise ValueError("Dataset not implemented")

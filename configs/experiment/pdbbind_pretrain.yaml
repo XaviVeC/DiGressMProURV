@@ -1,0 +1,44 @@
+defaults:
+  - _self_
+  - dataset: pdbbind
+  - model: discrete
+  - train: train_default
+
+general:
+  name: pdbbind_pretrain
+  wandb: online
+  gpus: 1
+  resume: null
+  test_only: null
+
+train:
+  batch_size: 32
+  n_epochs: 200
+  lr: 0.0002
+  clip_grad: 1.0
+  save_model: True
+  num_workers: 0
+  ema_decay: 0.999
+  early_stopping_patience: 30
+  lr_scheduler: cosine
+  lr_scheduler_min_lr: 1e-6
+  weight_decay: 1e-12
+
+model:
+  type: discrete
+  transition: marginal
+  n_layers: 3
+  dropout: 0.2
+  lambda_train: [5, 1]
+  hidden_mlp_dims:
+    X: 128
+    E: 64
+    y: 64
+  hidden_dims:
+    dx: 128
+    de: 32
+    dy: 32
+    n_head: 4
+    dim_ffX: 128
+    dim_ffE: 64
+    dim_ffy: 64
