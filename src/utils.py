@@ -1,4 +1,8 @@
 import os
+from copy import deepcopy
+from typing import Dict, Optional, Union
+
+import pytorch_lightning as pl
 import torch_geometric.utils
 from omegaconf import OmegaConf, open_dict
 from torch_geometric.utils import to_dense_adj, to_dense_batch
@@ -21,6 +25,84 @@ def create_folders(args):
         os.makedirs('chains/' + args.general.name)
     except OSError:
         pass
+
+
+class EMA(pl.Callback):
+    """Keep an exponential moving average of model weights for evaluation/checkpointing."""
+
+    def __init__(
+        self,
+        decay: float = 0.9999,
+        ema_device: Optional[Union[torch.device, str]] = None,
+        pin_memory: bool = True,
+    ):
+        super().__init__()
+        self.decay = decay
+        self.ema_device = f"{ema_device}" if ema_device else None
+        self.ema_pin_memory = pin_memory and torch.cuda.is_available()
+        self.ema_state_dict: Dict[str, torch.Tensor] = {}
+        self.original_state_dict: Dict[str, torch.Tensor] = {}
+        self._ema_state_dict_ready = False
+
+    @staticmethod
+    def get_state_dict(pl_module: pl.LightningModule) -> Dict[str, torch.Tensor]:
+        return pl_module.state_dict()
+
+    def _clone_state_dict(self, state_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        cloned_state = {}
+        for key, tensor in state_dict.items():
+            clone = tensor.detach().clone()
+            if self.ema_device:
+                clone = clone.to(device=self.ema_device)
+            if self.ema_device == "cpu" and self.ema_pin_memory and clone.device.type == "cpu":
+                clone = clone.pin_memory()
+            cloned_state[key] = clone
+        return cloned_state
+
+    def on_train_start(self, trainer: "pl.Trainer", pl_module: pl.LightningModule) -> None:
+        if not self._ema_state_dict_ready:
+            self.ema_state_dict = self._clone_state_dict(self.get_state_dict(pl_module))
+            self._ema_state_dict_ready = True
+
+    def on_train_batch_start(
+        self,
+        trainer: "pl.Trainer",
+        pl_module: pl.LightningModule,
+        batch,
+        batch_idx,
+    ) -> None:
+        if self.original_state_dict:
+            pl_module.load_state_dict(self.original_state_dict, strict=False)
+
+    def on_train_batch_end(self, trainer: "pl.Trainer", pl_module: pl.LightningModule, *args, **kwargs) -> None:
+        if not self._ema_state_dict_ready:
+            return
+
+        current_state = self.get_state_dict(pl_module)
+        with torch.no_grad():
+            for key, value in current_state.items():
+                ema_value = self.ema_state_dict[key]
+                source_value = value.detach()
+                if ema_value.dtype.is_floating_point:
+                    ema_value.mul_(self.decay).add_(source_value.to(device=ema_value.device), alpha=1.0 - self.decay)
+                else:
+                    ema_value.copy_(source_value.to(device=ema_value.device), non_blocking=True)
+
+        self.original_state_dict = self._clone_state_dict(current_state)
+        ema_for_module = {key: value.to(device=pl_module.device) for key, value in self.ema_state_dict.items()}
+        pl_module.load_state_dict(ema_for_module, strict=False)
+
+    def on_save_checkpoint(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", checkpoint: Dict) -> dict:
+        return {
+            "ema_state_dict": self.ema_state_dict,
+            "original_state_dict": self.original_state_dict,
+            "_ema_state_dict_ready": self._ema_state_dict_ready,
+        }
+
+    def on_load_checkpoint(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", callback_state: Dict):
+        self._ema_state_dict_ready = callback_state.get("_ema_state_dict_ready", False)
+        self.ema_state_dict = callback_state.get("ema_state_dict", {})
+        self.original_state_dict = callback_state.get("original_state_dict", {})
 
 
 def normalize(X, E, y, norm_values, norm_biases, node_mask):

@@ -1,8 +1,10 @@
+# @package _global_
+
 defaults:
+  - override /dataset: pdbbind
+  - override /model: discrete
+  - override /train: train_default
   - _self_
-  - dataset: pdbbind
-  - model: discrete
-  - train: train_default
 
 general:
   name: pdbbind_pretrain

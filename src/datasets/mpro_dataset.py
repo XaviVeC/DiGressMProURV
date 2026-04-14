@@ -88,7 +88,7 @@ class MproDataset(InMemoryDataset):
         
         # Resolve dataset_dir path in a portable way
         if dataset_dir is None:
-            # Default: repo root is two levels above this file; expect MPro-URV_Version2 next to repo
+            # Default: resolve MPro-URV_Version2 inside the DiGressMProURV project root.
             base_path = pathlib.Path(__file__).resolve().parents[2]
             self.dataset_dir = str((base_path / 'MPro-URV_Version2').resolve())
         else:

@@ -1,8 +1,10 @@
+# @package _global_
+
 defaults:
+  - override /dataset: mpro
+  - override /model: discrete
+  - override /train: train_default
   - _self_
-  - dataset: mpro
-  - model: discrete
-  - train: train_default
 
 general:
   name: mpro_finetune

@@ -72,7 +72,7 @@ class PDBbindDataset(InMemoryDataset):
         self.remove_h = remove_h
 
         if dataset_dir is None:
-            base_path = pathlib.Path(__file__).resolve().parents[3]
+            base_path = pathlib.Path(__file__).resolve().parents[2]
             self.dataset_dir = str((base_path / 'PDBbindv2020').resolve())
         else:
             self.dataset_dir = str(pathlib.Path(dataset_dir).expanduser().resolve())

@@ -22,7 +22,7 @@
 name: 'mpro'  # Dataset identifier
 
 # Path to MPro-URV_Version2 database root directory
-# If not set, uses default path: ../../../test_code/MPro-URV_Version2
+# If not set, uses default path: DiGressMProURV/MPro-URV_Version2
 datadir: 'data/mpro/'
 
 # Raw data directory (full path to MPro-URV_Version2)
