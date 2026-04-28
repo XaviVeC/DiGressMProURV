@@ -1,4 +1,5 @@
 import graph_tool as gt
+import copy
 import os
 import pathlib
 import math
@@ -21,6 +22,34 @@ from diffusion.extra_features import DummyExtraFeatures, ExtraFeatures
 
 
 warnings.filterwarnings("ignore", category=PossibleUserWarning)
+
+
+LEGACY_DIM_FFY = 2048
+
+
+def _is_legacy_dim_ffy_mismatch(error: RuntimeError) -> bool:
+    message = str(error)
+    return (
+        'model.tf_layers.0.lin_y1.weight' in message
+        and 'model.tf_layers.0.lin_y2.weight' in message
+        and '2048' in message
+    )
+
+
+def _load_checkpoint_with_compat(model_cls, checkpoint_path, model_kwargs, cfg):
+    try:
+        return model_cls.load_from_checkpoint(checkpoint_path, **model_kwargs)
+    except RuntimeError as error:
+        if model_cls is not DiscreteDenoisingDiffusion or not _is_legacy_dim_ffy_mismatch(error):
+            raise
+
+        legacy_cfg = copy.deepcopy(cfg)
+        legacy_cfg.model.hidden_dims['dim_ffy'] = LEGACY_DIM_FFY
+        print(
+            f"Detected legacy checkpoint with dim_ffy={LEGACY_DIM_FFY}. "
+            "Retrying load with compatibility config."
+        )
+        return model_cls.load_from_checkpoint(checkpoint_path, cfg=legacy_cfg, **model_kwargs)
 
 
 def build_early_stopping_callback(cfg):
@@ -48,9 +77,9 @@ def get_resume(cfg, model_kwargs):
     name = cfg.general.name + '_resume'
     resume = cfg.general.test_only
     if cfg.model.type == 'discrete':
-        model = DiscreteDenoisingDiffusion.load_from_checkpoint(resume, **model_kwargs)
+        model = _load_checkpoint_with_compat(DiscreteDenoisingDiffusion, resume, model_kwargs, cfg)
     else:
-        model = LiftedDenoisingDiffusion.load_from_checkpoint(resume, **model_kwargs)
+        model = _load_checkpoint_with_compat(LiftedDenoisingDiffusion, resume, model_kwargs, cfg)
     cfg = model.cfg
     cfg.general.test_only = resume
     cfg.general.name = name
@@ -68,9 +97,9 @@ def get_resume_adaptive(cfg, model_kwargs):
     resume_path = os.path.join(root_dir, cfg.general.resume)
 
     if cfg.model.type == 'discrete':
-        model = DiscreteDenoisingDiffusion.load_from_checkpoint(resume_path, **model_kwargs)
+        model = _load_checkpoint_with_compat(DiscreteDenoisingDiffusion, resume_path, model_kwargs, cfg)
     else:
-        model = LiftedDenoisingDiffusion.load_from_checkpoint(resume_path, **model_kwargs)
+        model = _load_checkpoint_with_compat(LiftedDenoisingDiffusion, resume_path, model_kwargs, cfg)
     new_cfg = model.cfg
 
     for category in cfg:
