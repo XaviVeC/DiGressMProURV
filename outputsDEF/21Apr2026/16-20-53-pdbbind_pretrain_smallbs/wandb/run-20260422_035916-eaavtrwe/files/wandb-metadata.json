@@ -1,0 +1,17 @@
+{
+  "os":  "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+  "python":  "CPython 3.9.23",
+  "startedAt":  "2026-04-22T01:59:16.137805Z",
+  "args":  [
+    "+experiment=pdbbind_pretrain",
+    "general.name=pdbbind_pretrain_smallbs",
+    "dataset.raw_data_dir=/home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/PDBbindv2020",
+    "train.batch_size=8"
+  ],
+  "program":  "/home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/src/main.py",
+  "email":  "xavivegacuadros@gmail.com",
+  "root":  "/home/andromeda/Documentos/TFM_Xavi/outputs/2026-04-21/16-20-53-pdbbind_pretrain_smallbs",
+  "host":  "andromeda-System-Product-Name",
+  "executable":  "/home/andromeda/miniconda3/envs/digress/bin/python",
+  "writerId":  "cxjz35atldehpxrxnbqf1casvfyo9dnz"
+}

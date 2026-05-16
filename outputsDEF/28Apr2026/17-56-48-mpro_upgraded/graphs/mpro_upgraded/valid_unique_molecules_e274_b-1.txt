@@ -1,0 +1,11 @@
+Clc1cc2cccccc3c1nc2-3
+Oc1cc2ccccccc1=CC1=CC=21
+CNCC12C=CC(Cl)=CC1=C1C=C12
+CC(N)C12C=C3C1=c1c3cc3n1C=32
+NCc1ccc2nccc3c2c1C=C3
+c1ccc2cnccc2c1
+c1cnc2cc3ccc(c1)c-2c3
+C1=Cc2cc1ccn2
+C1=CC2=NC3=C4N=C4C24C=CC1=CC3=C4
+ClC1=CC=CC2=CC2=C1
+Clc1ccccccc[nH]1

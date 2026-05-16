@@ -1,0 +1,15 @@
+CCC12C=Cc3cc1c1cccc2cc3-1
+C1=Cc2cn3c(ccc[nH]2)C1=C3
+OCCc1ccc2ccccc3cc-3n2c1
+Cc1cc2ccc(N)ccc(Cl)c1=2
+ClC1=CNCOC=CC=C2C=CC2=C1
+C1=CC2=CC(=N2)C=C1
+CNC1=C2C(=C1)C1(Cl)C3=CC3=C21
+NC1=NC=CC=CC=C1
+CC1N=CC(Cl)=CC=CC=C2C=CC=NC=C21
+OC12C=CC=NC1=CC=C2
+COCC1=Cc2cc1ncccc[nH]2
+NCC1=CC(c2ccccc2)=C1
+Oc1c2cc2c2ccc3c4cc1c3c4c2
+Clc1c2c3c(c4cccc-4c1-3)C=N2
+C1=Cc2c3ccc4ccnc(c2C1=C3)C=NCC4

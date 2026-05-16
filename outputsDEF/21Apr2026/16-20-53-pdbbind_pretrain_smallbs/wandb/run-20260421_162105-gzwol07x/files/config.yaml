@@ -1,0 +1,117 @@
+_wandb:
+    value:
+        cli_version: 0.25.0
+        e:
+            amnkfnirdmnc9nk3aus6myn2vguquvo6:
+                args:
+                    - +experiment=pdbbind_pretrain
+                    - general.name=pdbbind_pretrain_smallbs
+                    - dataset.raw_data_dir=/home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/PDBbindv2020
+                    - train.batch_size=8
+                email: xavivegacuadros@gmail.com
+                executable: /home/andromeda/miniconda3/envs/digress/bin/python
+                host: andromeda-System-Product-Name
+                os: Linux-6.8.0-106-generic-x86_64-with-glibc2.35
+                program: /home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/src/main.py
+                python: CPython 3.9.23
+                root: /home/andromeda/Documentos/TFM_Xavi/outputs/2026-04-21/16-20-53-pdbbind_pretrain_smallbs
+                startedAt: "2026-04-21T14:21:05.050071Z"
+                writerId: amnkfnirdmnc9nk3aus6myn2vguquvo6
+        m: []
+        python_version: 3.9.23
+        t:
+            "1":
+                - 1
+                - 9
+                - 50
+                - 51
+                - 77
+                - 103
+            "2":
+                - 1
+                - 9
+                - 50
+                - 51
+                - 77
+                - 103
+            "3":
+                - 2
+                - 3
+                - 13
+                - 16
+                - 62
+            "4": 3.9.23
+            "5": 0.25.0
+            "10":
+                - 20
+            "12": 0.25.0
+            "13": linux-x86_64
+dataset:
+    value:
+        datadir: data/pdbbind/
+        name: pdbbind
+        pin_memory: true
+        random_subset: null
+        raw_data_dir: /home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/PDBbindv2020
+        remove_h: true
+general:
+    value:
+        chains_to_save: 1
+        check_val_every_n_epochs: 5
+        evaluate_all_checkpoints: false
+        final_model_chains_to_save: 20
+        final_model_samples_to_generate: 10000
+        final_model_samples_to_save: 30
+        gpus: 1
+        log_every_steps: 50
+        name: pdbbind_pretrain_smallbs
+        number_chain_steps: 50
+        resume: null
+        sample_every_val: 4
+        samples_to_generate: 512
+        samples_to_save: 20
+        test_only: null
+        val_check_interval: null
+        wandb: online
+model:
+    value:
+        diffusion_noise_schedule: cosine
+        diffusion_steps: 500
+        dropout: 0.2
+        extra_features: all
+        hidden_dims:
+            de: 32
+            dim_ffE: 64
+            dim_ffX: 128
+            dim_ffy: 64
+            dx: 128
+            dy: 32
+            n_head: 4
+        hidden_mlp_dims:
+            E: 64
+            X: 128
+            "y": 64
+        lambda_train:
+            - 5
+            - 1
+        model: graph_tf
+        n_layers: 3
+        transition: marginal
+        type: discrete
+train:
+    value:
+        batch_size: 8
+        clip_grad: 1
+        early_stopping_patience: 30
+        ema_decay: 0.999
+        lr: 0.0002
+        lr_scheduler: cosine
+        lr_scheduler_gamma: 0.99
+        lr_scheduler_min_lr: 1e-06
+        n_epochs: 200
+        num_workers: 0
+        optimizer: adamw
+        progress_bar: false
+        save_model: true
+        seed: 0
+        weight_decay: 1e-12

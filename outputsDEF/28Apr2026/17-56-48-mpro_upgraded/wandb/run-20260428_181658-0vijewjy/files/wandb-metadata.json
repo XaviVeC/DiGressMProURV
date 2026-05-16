@@ -1,0 +1,15 @@
+{
+  "os":  "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+  "python":  "CPython 3.9.23",
+  "startedAt":  "2026-04-28T16:16:58.746958Z",
+  "args":  [
+    "+experiment=mpro_upgraded",
+    "general.wandb=online"
+  ],
+  "program":  "/home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/src/main.py",
+  "email":  "xavivegacuadros@gmail.com",
+  "root":  "/home/andromeda/Documentos/TFM_Xavi/outputs/2026-04-28/17-56-48-mpro_upgraded",
+  "host":  "andromeda-System-Product-Name",
+  "executable":  "/home/andromeda/miniconda3/envs/digress/bin/python",
+  "writerId":  "3rw88z3w6gzun4sq80nbx0zjhf8m6ixj"
+}

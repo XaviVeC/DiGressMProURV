@@ -1,0 +1,1 @@
+C1=CC=Cc2cc(ccn2)C=C1

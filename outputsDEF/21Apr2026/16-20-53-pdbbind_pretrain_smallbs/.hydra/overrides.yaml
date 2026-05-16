@@ -1,0 +1,4 @@
+- +experiment=pdbbind_pretrain
+- general.name=pdbbind_pretrain_smallbs
+- dataset.raw_data_dir=/home/andromeda/Documentos/TFM_Xavi/DiGressMProURV/PDBbindv2020
+- train.batch_size=8
