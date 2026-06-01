@@ -42,7 +42,7 @@ MPro-URV_Version2
         │
         ▼
 [2] SMILES generation
-    → outputsDEF/DiGress-MPro-28Apr2026/.../valid_unique_molecules_e320_b65.txt
+    → outputsDEF/28Apr2026/.../valid_unique_molecules_e320_b65.txt
         │
         ▼
 [3] mpro_gine_pic50_regression.ipynb
@@ -78,8 +78,8 @@ PDBbind v2020
         │
         ▼
 [3] SMILES generation
-    → outputsDEF/DiGress-PDBBind-MPro-14Apr2026/.../valid_unique_molecules_e75_b1.txt   (1802 mol.)
-    → outputsDEF/DiGress-PDBBind-MPro-21Apr2026/.../valid_unique_molecules_e80_b1.txt   (1780 mol.)
+    → outputsDEF/14Apr2026/.../valid_unique_molecules_e75_b1.txt   (1802 mol.)
+    → outputsDEF/21Apr2026/.../valid_unique_molecules_e80_b1.txt   (1780 mol.)
         │
         ▼
 [4] mpro_gine_pic50_regression.ipynb
@@ -234,8 +234,8 @@ same hyperparameters from `gine_best_hparams.json`.
 | Notebook | Source CSVs | Filter | Size control | Checkpoint |
 |----------|-------------|--------|--------------|------------|
 | `mpro_digress_gine_pic50_regression.ipynb` | 14Apr + 21Apr | None | All available (3785 train graphs) | `gine_digress_pic50_regressor.pt` |
-| `mpro_digress_filtered_gine_regression.ipynb` | DiGress-PDBBind-MPro | pIC50 + atom count | `DIGRESS_APPEND_PERCENT = 50` | `gine_filtered_digress_pic50_regressor.pt` |
-| `mpro_digress_upgraded_gine_regression.ipynb` | DiGress-MPro | pIC50 + atom count | `N_DIGRESS_FIXED = 200` | `gine_upgraded_digress_pic50_regressor.pt` |
+| `mpro_digress_filtered_gine_regression.ipynb` | 14Apr + 21Apr | pIC50 + atom count | `DIGRESS_APPEND_PERCENT = 50` | `gine_filtered_digress_pic50_regressor.pt` |
+| `mpro_digress_upgraded_gine_regression.ipynb` | 28Apr only | pIC50 + atom count | `N_DIGRESS_FIXED = 200` | `gine_upgraded_digress_pic50_regressor.pt` |
 
 The filtered and upgraded notebooks include a five-seed robustness evaluation (seeds 42–46).
 Summary statistics (mean ± std of RMSE, MAE, R², Pearson r) are printed alongside ROC and
